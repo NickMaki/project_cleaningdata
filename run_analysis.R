@@ -1,7 +1,10 @@
 library(dplyr)
 library(data.table)
-#wdir<-"C:/COURSERA/Getting&Cleaning/project"  #Specify your working directory where all data is
+library(reshape2)
+
+#wdir<-"C:/COURSERA/GettingCleaning/project"  #Specify your working directory where all data is
 #setwd(wdir) # set the working directory where the data files are
+
 allframe_train<-data.frame() #create an empty data frame for later storing training data
 allframe_test<-data.frame() #create an empty empty data frame for test data
 allframe<-data.frame()#create an empty dataframe which will combine/merge the training and test data
@@ -63,6 +66,13 @@ merged2 <- merged1[, !duplicated(colnames(merged1), fromLast = T)] #remove dubpl
 index1<-grep("mean()|std()|person|activity",names(merged2)) #find the index of columns of names of the data frame including these strings
 
 merged3<-select(merged2,index1) #select the variables based on index above
+
+
+merged3 <- melt(merged3, id=c("person", "activity")) #melt the database across two dimensions, person+activity
+merged3<-dcast(merged3, person+activity ~ variable, mean) #find the mean of all variables(s) along the two dimensions
+#names(merged3)
+#head(merged3)
+#tail(merged3)
 
 
 write.table(merged3,"tidy_data.txt",row.names=FALSE) #write data into a txt file
